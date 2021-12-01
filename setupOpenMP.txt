@@ -1,0 +1,21 @@
+This file describes modifications to an installed Cygwin-hosted toolchain which
+enable it to be ported to and used on a non-Cygwin Window PC.
+
+I install toolchains to c:/cross/arm-whatever-eabi.
+
+After building and installing GCC using ct-ng:
+
+Fix Windows security settings on the install directory so that changes can be made. 
+
+Copy cygwin1.dll and cyggcc_s-seh-1.dll to ./bin.
+
+Copy omp.h to ./lib/gcc/arm-multi-eabi/11.2.0/include (update path as needed).
+
+Delete empty ./include
+
+Create ./usr
+
+Move ./libexec to ./usr.
+
+Copy ./arm-multi-eabi to ./usr.
+
