@@ -52,3 +52,10 @@ testing/docker/*/xtools
 .build-all/
 # .. and release creation
 release/
+*.exe
+/kconfig/.libs/conf_ltshwrapper
+/kconfig/.libs/lt-conf.c
+/kconfig/.libs/lt-mconf.c
+/kconfig/.libs/lt-nconf.c
+/kconfig/.libs/mconf_ltshwrapper
+/kconfig/.libs/nconf_ltshwrapper

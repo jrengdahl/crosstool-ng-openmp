@@ -380,6 +380,7 @@ do_gcc_core_backend() {
 
     case "${CT_CC_GCC_LIBSTDCXX_VERBOSE}" in
         y)  extra_config+=("--enable-libstdcxx-verbose");;
+        m)  ;;
         "") extra_config+=("--disable-libstdcxx-verbose");;
     esac
 
@@ -433,6 +434,10 @@ do_gcc_core_backend() {
 
     if [ ${#host_libstdcxx_flags[@]} -ne 0 ]; then
         extra_config+=("--with-host-libstdcxx=${host_libstdcxx_flags[*]}")
+    fi
+
+    if [ "${CT_CC_GCC_ENABLE_DEFAULT_PIE}" = "y" ]; then
+        extra_config+=("--enable-default-pie")
     fi
 
     if [ "${CT_CC_GCC_ENABLE_TARGET_OPTSPACE}" = "y" ] || \
@@ -799,7 +804,7 @@ gcc_movelibs()
 
     # Move only files, directories are for other multilibs. We're looking inside
     # GCC's directory structure, thus use unmangled multi_os_dir that GCC reports.
-    gcc_dir="${CT_PREFIX_DIR}/${CT_TARGET}/lib/${multi_os_dir_gcc}"
+    gcc_dir="${canon_prefix}/${CT_TARGET}/lib/${multi_os_dir_gcc}"
     if [ ! -d "${gcc_dir}" ]; then
         # GCC didn't install anything outside of sysroot
         return
@@ -812,7 +817,7 @@ gcc_movelibs()
         dst_dir="${canon_root}/lib/${multi_os_dir}"
     fi
     CT_SanitizeVarDir dst_dir gcc_dir
-    rel=$( echo "${gcc_dir#${CT_PREFIX_DIR}/}" | sed 's#[^/]\{1,\}#..#g' )
+    rel=$( echo "${gcc_dir#${canon_prefix}/}" | sed 's#[^/]\{1,\}#..#g' )
 
     ls "${gcc_dir}" | while read f; do
         case "${f}" in
@@ -1004,11 +1009,11 @@ do_gcc_backend() {
         extra_config+=(--disable-libquadmath-support)
     fi
 
-    if [ "${CT_CC_GCC_LIBSANITIZER}" = "y" ]; then
-        extra_config+=(--enable-libsanitizer)
-    else
-        extra_config+=(--disable-libsanitizer)
-    fi
+    case "${CT_CC_GCC_LIBSANITIZER}" in
+        y) extra_config+=(--enable-libsanitizer);;
+        m) ;;
+        "") extra_config+=(--disable-libsanitizer);;
+    esac
 
     if [ "${CT_CC_GCC_HAS_LIBMPX}" = "y" ]; then
         if [ "${CT_CC_GCC_LIBMPX}" = "y" ]; then
@@ -1020,6 +1025,7 @@ do_gcc_backend() {
 
     case "${CT_CC_GCC_LIBSTDCXX_VERBOSE}" in
         y)  extra_config+=("--enable-libstdcxx-verbose");;
+        m)  ;;
         "") extra_config+=("--disable-libstdcxx-verbose");;
     esac
     
