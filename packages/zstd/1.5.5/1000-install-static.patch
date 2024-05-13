@@ -1,0 +1,28 @@
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -26,6 +26,9 @@
+ endif
+ 
+ include libzstd.mk
++
++.PHONY: install-static
++.PHONY: install-includes
+ 
+ ZSTD_FILES := $(ZSTD_COMMON_FILES) $(ZSTD_LEGACY_FILES)
+ 
+@@ -316,7 +319,6 @@
+ 	[ -e $(DESTDIR)$(PKGCONFIGDIR) ] || $(INSTALL) -d -m 755 $(DESTDIR)$(PKGCONFIGDIR)/
+ 	$(INSTALL_DATA) libzstd.pc $(DESTDIR)$(PKGCONFIGDIR)/
+ 
+-.PHONY: install-static
+ install-static:
+ 	# only generate libzstd.a if it's not already present
+ 	[ -e libzstd.a ] || $(MAKE) libzstd.a-release
+@@ -334,7 +336,6 @@
+ 	ln -sf $(LIBZSTD) $(DESTDIR)$(LIBDIR)/libzstd.$(SHARED_EXT_MAJOR)
+ 	ln -sf $(LIBZSTD) $(DESTDIR)$(LIBDIR)/libzstd.$(SHARED_EXT)
+ 
+-.PHONY: install-includes
+ install-includes:
+ 	[ -e $(DESTDIR)$(INCLUDEDIR) ] || $(INSTALL) -d -m 755 $(DESTDIR)$(INCLUDEDIR)/
+ 	@echo Installing includes
