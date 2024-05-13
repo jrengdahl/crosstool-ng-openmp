@@ -82,6 +82,10 @@ endian = '${CT_ARCH_ENDIAN}'
 c_args = [ ${meson_cflags} '-nostdlib', '-fno-common', '-ftls-model=local-exec' ]
 needs_exe_wrapper = true
 skip_sanity_check = true
+default_flash_addr = '${CT_LIBC_PICOLIBC_DEFAULT_FLASH_ADDR}'
+default_flash_size = '${CT_LIBC_PICOLIBC_DEFAULT_FLASH_SIZE}'
+default_ram_addr = '${CT_LIBC_PICOLIBC_DEFAULT_RAM_ADDR}'
+default_ram_size = '${CT_LIBC_PICOLIBC_DEFAULT_RAM_SIZE}'
 EOF
 
     local picolibc_sysroot_dir
@@ -146,7 +150,9 @@ do_cc_libstdcxx_picolibc()
     final_opts+=( "lang_list=c,c++" )
     final_opts+=( "build_step=libstdcxx" )
     final_opts+=( "extra_config+=('--enable-stdio=stdio_pure')" )
-    final_opts+=( "extra_config+=('--disable-wchar_t')" )
+    if [ "${CT_PICOLIBC_older_than_1_8}" = "y" ]; then
+	final_opts+=( "extra_config+=('--disable-wchar_t')" )
+    fi
     if [ "${CT_LIBC_PICOLIBC_ENABLE_TARGET_OPTSPACE}" = "y" ]; then
         final_opts+=( "enable_optspace=yes" )
     fi
