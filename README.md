@@ -1,3 +1,13 @@
+This is a slight modification to crosstool-ng which allows building a bare metal GCC toolchain with OpenMP enabled. Normally OpenMP is only enabled for operating systems such as Linux which have threading and an implementation of libgomp. This variant produces toolchains which compile OpenMP code for bare metal (ARM EABI) systems for which threading and libgomp do not already exist.
+
+The modifications have been developed and tested on a Windows 10/Cygwin system. It is possible to produce a toolchain using Cygwin which can be ported to and used on a non-Cygwin Windows PC. 
+
+This is all very experimental. At this point I have been able to demonstrate OpenMP code on a single-core Cortex-M7 (STM32H743) with four software threads. Running OpenMP on a single-core platform is sort of pointless, but the board and development support are cheap and easy to use. Once I develop the infrastructure it will be easy to port to a multi-core platform later. Raspberry Pi is a cheap multi-core platform, but it is not supported by Segger J-link and there is no inexpensive trace suport. Perhaps i.MX6 or i.MX8 (Google Coral) may work out.
+
+The remainder of this README is the same as the original.
+
+==============
+
 # Crosstool-NG
 
 ## Introduction

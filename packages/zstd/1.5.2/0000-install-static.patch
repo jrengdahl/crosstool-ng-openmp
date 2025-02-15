@@ -1,0 +1,34 @@
+*** tarballs/zstd-1.5.5/lib/Makefile	Wed Apr  5 05:13:52 2023
+--- src/zstd-1.5.5/lib/Makefile	Sun Jun  4 20:52:11 2023
+***************
+*** 29,34 ****
+--- 29,35 ----
+  
+  include libzstd.mk
+  
++ .PHONY:	install-static
++ .PHONY: install-includes
++ 
+  ZSTD_FILES := $(ZSTD_COMMON_FILES) $(ZSTD_LEGACY_FILES)
+  
+  ifneq ($(ZSTD_LIB_COMPRESSION), 0)
+***************
+*** 316,322 ****
+  	[ -e $(DESTDIR)$(PKGCONFIGDIR) ] || $(INSTALL) -d -m 755 $(DESTDIR)$(PKGCONFIGDIR)/
+  	$(INSTALL_DATA) libzstd.pc $(DESTDIR)$(PKGCONFIGDIR)/
+  
+- .PHONY: install-static
+  install-static:
+  	# only generate libzstd.a if it's not already present
+  	[ -e libzstd.a ] || $(MAKE) libzstd.a-release
+--- 319,325 ----
+***************
+*** 333,339 ****
+  	ln -sf $(LIBZSTD) $(DESTDIR)$(LIBDIR)/libzstd.$(SHARED_EXT_MAJOR)
+  	ln -sf $(LIBZSTD) $(DESTDIR)$(LIBDIR)/libzstd.$(SHARED_EXT)
+  
+- .PHONY: install-includes
+  install-includes:
+  	[ -e $(DESTDIR)$(INCLUDEDIR) ] || $(INSTALL) -d -m 755 $(DESTDIR)$(INCLUDEDIR)/
+  	@echo Installing includes
+--- 335,340 ----

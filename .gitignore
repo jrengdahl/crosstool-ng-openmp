@@ -52,3 +52,5 @@ testing/docker/*/xtools
 .build-all/
 # .. and release creation
 release/
+*.exe
+/kconfig/.libs

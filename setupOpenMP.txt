@@ -1,0 +1,36 @@
+For Cygwin:
+
+In order to complete setup of the toolchain and to enable its use
+in a non-Cygwin environment (such as Eclipse), do the following
+after building GCC using ct-ng:
+
+(1) Copy cygwin1.dll and cyggcc_s-seh-1.dll from C:/cygwin64/bin to the
+toolchain's bin directory. If you update your Cygwin you may need to
+repeat this step. Cygwin will be unhappy if the DLL versions in the Cygwin
+bin directory and the toolchain bin directory do not match.
+
+(2) Copy omp.h from another toolchain to  this toolchain's
+lib/gcc/aarch64-whatever-elf/11.2.0/include directory (for example).
+Modify the path as appropriate for your toolchain version.
+
+(3) Create <toolchain>/usr.
+
+(4) Move <toolchain>/libexec to <toolchain>/usr.
+
+(5) Copy <toolchain>/aarch64-whatever-elf to <toolchain>/usr.
+
+(6) If you need to install this GCC as an Eclipse toolchain, copy gdb.exe
+from another toolchain to <toolchain>/bin and adjust its triplet prefix
+as needed. My crosstool-ng .config files do not build gdb since I was
+getting build errors. However, the Eclipse toolchain importer requires
+gbd to be present, even if you don't use it. I have not tested whether
+a copied gdb works, since I use Segger's Ozone debugger instead.
+
+In the above instructions, adjust the path and filenames as needed, for
+example, substitute arm-uboot-eabi for aarch64-whatever-elf.
+
+
+For Linux:
+
+Only do step 2, and perhaps step 6 if you need to import the
+toolchain into Eclipse.
