@@ -26,13 +26,7 @@ do_picolibc_common_install() {
 
     yn_args="IO_C99FMT:io-c99-formats
 IO_LL:io-long-long
-REGISTER_FINI:newlib-register-fini
 NANO_MALLOC:newlib-nano-malloc
-ATEXIT_DYNAMIC_ALLOC:newlib-atexit-dynamic-alloc
-GLOBAL_ATEXIT:newlib-global-atexit
-LITE_EXIT:lite-exit
-MULTITHREAD:newlib-multithread
-RETARGETABLE_LOCKING:newlib-retargetable-locking
     "
 
     for ynarg in $yn_args; do
@@ -47,6 +41,24 @@ RETARGETABLE_LOCKING:newlib-retargetable-locking
             picolibc_opts+=( "-D$argument=false" )
         fi
     done
+
+    # Check how picolibc wants threading support to be specified
+
+    if grep -q single-thread "${CT_SRC_DIR}/picolibc/meson_options.txt"; then
+	if [ "${CT_LIBC_PICOLIBC_MULTITHREAD}" = "y" ]; then
+	    picolibc_opts+=("-Dsingle-thread=false")
+	else
+	    picolibc_opts+=("-Dsingle-thread=true")
+	fi
+    else
+	if [ "${CT_LIBC_PICOLIBC_MULTITHREAD}" = "y" ]; then
+	    picolibc_opts+=("-Dnewlib-retargetable-locking=true")
+	    picolibc_opts+=("-Dnewlib-multithread=true")
+	else
+	    picolibc_opts+=("-Dnewlib-retargetable-locking=false")
+	    picolibc_opts+=("-Dnewlib-multithread=false")
+	fi
+    fi
 
     [ "${CT_LIBC_PICOLIBC_EXTRA_SECTIONS}" = "y" ] && \
         CT_LIBC_PICOLIBC_TARGET_CFLAGS="${CT_LIBC_PICOLIBC_TARGET_CFLAGS} -ffunction-sections -fdata-sections"
@@ -65,6 +77,11 @@ RETARGETABLE_LOCKING:newlib-retargetable-locking
         for cflag in ${cflags_for_target}; do
             meson_cflags="${meson_cflags} '${cflag}',"
         done
+
+        local -l target_arch="${CT_TARGET_ARCH}"
+        if [ "${CT_ARCH}" = "sh" ]; then
+            target_arch="sh"
+        fi
         cat << EOF > picolibc-cross.txt
 [binaries]
 c = '${CT_TARGET}-${CT_CC}'
@@ -74,8 +91,8 @@ strip = '${CT_TARGET}-strip'
 
 [host_machine]
 system = '${CT_TARGET_VENDOR}'
-cpu_family = '${CT_TARGET_ARCH}'
-cpu = '${CT_TARGET_ARCH}'
+cpu_family = '${target_arch}'
+cpu = '${target_arch}'
 endian = '${CT_ARCH_ENDIAN}'
 
 [properties]
@@ -156,6 +173,9 @@ do_cc_libstdcxx_picolibc()
     fi
     if [ "${CT_LIBC_PICOLIBC_ENABLE_TARGET_OPTSPACE}" = "y" ]; then
         final_opts+=( "enable_optspace=yes" )
+    fi
+    if [ -n "${CT_LIBC_PICOLIBC_GCC_LIBSTDCXX_TARGET_CXXFLAGS}" ]; then
+        final_opts+=( "extra_cxxflags_for_target=${CT_LIBC_PICOLIBC_GCC_LIBSTDCXX_TARGET_CXXFLAGS}" )
     fi
 
     if [ "${CT_BARE_METAL}" = "y" ]; then

@@ -390,7 +390,7 @@ do_gcc_core_backend() {
     esac
 
     if [ "${build_libstdcxx}" = "yes" ]; then
-        if [ "${CT_CC_GCC_LIBSTDCXX}" = "n" ]; then
+        if [ "x${CT_CC_GCC_LIBSTDCXX}" = "x" ]; then
             build_libstdcxx="no"
         elif [ "${CT_CC_GCC_LIBSTDCXX}" = "y" ]; then
             extra_config+=("--enable-libstdcxx")
@@ -664,6 +664,7 @@ do_gcc_core_backend() {
         --exec_prefix="${exec_prefix}"                 \
         --with-local-prefix="${CT_SYSROOT_DIR}"        \
         "${extra_config[@]}"                           \
+        --disable-libatomic                            \
         --enable-languages="${lang_list}"              \
         "${extra_user_config[@]}"
 
@@ -913,6 +914,7 @@ do_cc_for_host() {
     final_opts+=( "ldflags=${CT_LDFLAGS_FOR_HOST}" )
     final_opts+=( "lang_list=$( cc_gcc_lang_list )" )
     final_opts+=( "build_step=gcc_host" )
+    final_opts+=( "extra_cxxflags_for_target=${CT_CC_GCC_LIBSTDCXX_TARGET_CXXFLAGS}" )
     if [ "${CT_BUILD_MANUALS}" = "y" ]; then
         final_opts+=( "build_manuals=yes" )
     fi
@@ -1091,7 +1093,7 @@ do_gcc_backend() {
         "") extra_config+=("--disable-libstdcxx-verbose");;
     esac
     
-    if [ "${CT_CC_GCC_LIBSTDCXX}" = "n" ]; then
+    if [ "x${CT_CC_GCC_LIBSTDCXX}" = "x" ]; then
         extra_config+=(--disable-libstdcxx)
     elif [ "${CT_CC_GCC_LIBSTDCXX}" = "y" ]; then
         extra_config+=(--enable-libstdcxx)
@@ -1173,6 +1175,10 @@ do_gcc_backend() {
         else
             extra_config+=("--enable-threads=posix")
         fi
+    fi
+
+    if [ "${CT_CC_GCC_ENABLE_DEFAULT_PIE}" = "y" ]; then
+        extra_config+=("--enable-default-pie")
     fi
 
     if [ "${CT_CC_GCC_ENABLE_TARGET_OPTSPACE}" = "y" ] || \
